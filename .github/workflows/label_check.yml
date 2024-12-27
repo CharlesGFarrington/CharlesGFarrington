@@ -17,12 +17,18 @@ jobs:
     uses: ./.github/workflows/_get_version_label.yml
     with:
       application: pro
+      pr_number: ${{ github.event.pull_request.number }}
+    secrets:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   check-investor-label:
     name: Check Investor Version Label
     uses: ./.github/workflows/_get_version_label.yml
     with:
       application: investor
+      pr_number: ${{ github.event.pull_request.number }}
+    secrets:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   validate-labels:
     name: Validate All Labels

@@ -16,7 +16,7 @@ jobs:
       application: investor
       pr_number: ${{ github.event.pull_request.number }}
     secrets:
-      GH: ${{ secrets.GITHUB_TOKEN }}
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   calculate-investor-new-version:
     name: Calculate Investor New Version
