@@ -1,0 +1,81 @@
+name: main-branch-workflow
+on:
+  push:
+    branches:
+      - main
+
+permissions: write-all
+
+jobs:
+  calculate-and-tag-new-version:
+    name: Calculate and Apply Tags
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Fetch all tags
+        run: git fetch --tags
+
+      - name: Get Pro Version Label
+        id: get_pro_version_label
+        uses: ./.github/workflows/_get_version_label.yml
+        with:
+          application: pro
+          pr_number: ${{ github.event.pull_request.number }}
+
+      - name: Get Investor Version Label
+        id: get_investor_version_label
+        uses: ./.github/workflows/_get_version_label.yml
+        with:
+          application: investor
+          pr_number: ${{ github.event.pull_request.number }}
+
+      - name: Determine Pro Version
+        id: determine_pro_version
+        uses: ./.github/workflows/_version_bump.yml
+        with:
+          application: pro
+          version_type: ${{ steps.get_pro_version_label.outputs.version_type }}
+
+      - name: Determine Investor Version
+        id: determine_investor_version
+        uses: ./.github/workflows/_version_bump.yml
+        with:
+          application: investor
+          version_type: ${{ steps.get_investor_version_label.outputs.version_type }}
+
+      - name: Apply new tags
+        run: |
+          if [[ -n "${{ steps.determine_pro_version.outputs.new_version }}" ]]; then
+            git tag "pro:${{ steps.determine_pro_version.outputs.new_version }}"
+            echo "Tagged pro with version ${{ steps.determine_pro_version.outputs.new_version }}"
+          fi
+          if [[ -n "${{ steps.determine_investor_version.outputs.new_version }}" ]]; then
+            git tag "investor:${{ steps.determine_investor_version.outputs.new_version }}"
+            echo "Tagged investor with version ${{ steps.determine_investor_version.outputs.new_version }}"
+          fi
+
+          # Push tags back to the repository
+          git push --tags
+
+  deploy_pro:
+    name: Deploy Pro Application
+    needs: [calculate-and-tag-new-version]
+    uses: ./.github/workflows/deploy.yml
+    if: ${{ steps.determine_pro_version.outputs.new_version }}
+    with:
+      application: pro
+      version: ${{ steps.determine_pro_version.outputs.new_version }}
+      manual_deploy: ${{ contains(env.labels, 'manual deploy') }}
+
+  deploy_investor:
+    name: Deploy Investor Application
+    needs: [calculate-and-tag-new-version]
+    uses: ./.github/workflows/deploy.yml
+    if: ${{ steps.determine_investor_version.outputs.new_version }}
+    with:
+      application: investor
+      version: ${{ steps.determine_investor_version.outputs.new_version }}
+      manual_deploy: ${{ contains(env.labels, 'manual deploy') }}

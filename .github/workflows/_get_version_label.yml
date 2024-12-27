@@ -1,0 +1,63 @@
+name: Get Version Label Subworkflow
+
+on:
+  workflow_call:
+    inputs:
+      application:
+        required: true
+        type: string
+      pr_number:
+        required: true
+        type: string
+
+    outputs:
+      version_type:
+        description: The version type (patch, minor, or major) for the application
+        value: ${{ jobs.find-version-label.outputs.version_type }}
+
+jobs:
+  find-version-label:
+    name: Find Version Label
+    runs-on: ubuntu-latest
+
+    outputs:
+      version_type: ${{ steps.determine_label.outputs.version_type }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Get PR Labels
+        id: get_labels
+        run: |
+          PR_NUMBER=${{ inputs.pr_number }}
+          LABELS=$(gh pr view $PR_NUMBER --json labels --jq '.labels[].name')
+          echo "Labels: $LABELS"
+          echo "labels=$LABELS" >> $GITHUB_ENV
+
+      - name: Determine Version Label
+        id: determine_label
+        run: |
+          APPLICATION="${{ inputs.application }}"
+          LABELS="${LABELS}"
+
+          # Define valid labels for the application
+          VALID_LABELS=("${APPLICATION}:patch" "${APPLICATION}:minor" "${APPLICATION}:major")
+
+          VERSION_TYPE=""
+          for LABEL in $LABELS; do
+            if [[ " ${VALID_LABELS[@]} " =~ " $LABEL " ]]; then
+              VERSION_TYPE=$(echo $LABEL | cut -d':' -f2)
+              break
+            fi
+          done
+
+          echo "version_type=${VERSION_TYPE}" >> $GITHUB_OUTPUT
+
+      - name: Output Result
+        run: |
+          if [ -z "${{ steps.determine_label.outputs.version_type }}" ]; then
+            echo "No valid versioning label found for ${{ inputs.application }}."
+          else
+            echo "Found version type: ${{ steps.determine_label.outputs.version_type }}"
+          fi

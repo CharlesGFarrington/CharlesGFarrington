@@ -1,0 +1,41 @@
+name: label-check
+
+on:
+  pull_request:
+    types:
+      - labeled
+      - unlabeled
+
+jobs:
+  check-pro-label:
+    name: Check Pro Version Label
+    uses: ./.github/workflows/get_version_label.yml
+    with:
+      application: pro
+
+  check-investor-label:
+    name: Check Investor Version Label
+    uses: ./.github/workflows/get_version_label.yml
+    with:
+      application: investor
+
+  validate-labels:
+    name: Validate All Labels
+    needs:
+      - check-pro-label
+      - check-investor-label
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Validate Labels
+        run: |
+          echo "Pro Version Type: ${{ needs.check-pro-label.outputs.version_type }}"
+          echo "Investor Version Type: ${{ needs.check-investor-label.outputs.version_type }}"
+
+          # Ensure at least one versioning label exists
+          if [[ -z "${{ needs.check-pro-label.outputs.version_type }}" && -z "${{ needs.check-investor-label.outputs.version_type }}" ]]; then
+            echo "Error: No versioning labels found for Pro or Investor."
+            exit 1
+          fi
+
+          echo "Labels are valid."
