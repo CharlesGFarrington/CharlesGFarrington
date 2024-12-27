@@ -9,6 +9,9 @@ on:
       pr_number:
         required: true
         type: string
+    secrets:
+      GITHUB_TOKEN:
+        required: true
 
     outputs:
       version_type:
@@ -34,6 +37,8 @@ jobs:
           LABELS=$(gh pr view $PR_NUMBER --json labels --jq '.labels[].name')
           echo "Labels: $LABELS"
           echo "labels=$LABELS" >> $GITHUB_ENV
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Determine Version Label
         id: determine_label

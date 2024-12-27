@@ -16,6 +16,8 @@ jobs:
     with:
       application: pro
       pr_number: ${{ github.event.pull_request.number }}
+    secrets:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   calculate-pro-new-version:
     name: Calculate Pro New Version
