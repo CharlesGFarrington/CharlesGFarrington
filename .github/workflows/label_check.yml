@@ -14,13 +14,13 @@ on:
 jobs:
   check-pro-label:
     name: Check Pro Version Label
-    uses: ./.github/workflows/get_version_label.yml
+    uses: ./.github/workflows/_get_version_label.yml
     with:
       application: pro
 
   check-investor-label:
     name: Check Investor Version Label
-    uses: ./.github/workflows/get_version_label.yml
+    uses: ./.github/workflows/_get_version_label.yml
     with:
       application: investor
 
