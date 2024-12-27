@@ -3,6 +3,8 @@ name: build-confidence
 on:
   pull_request:
     types:
+      - opened
+      - unlocked
       - synchronize
       - reopened
       - ready_for_review
