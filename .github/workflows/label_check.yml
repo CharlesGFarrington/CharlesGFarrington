@@ -5,6 +5,11 @@ on:
     types:
       - labeled
       - unlabeled
+      - opened
+      - unlocked
+      - synchronize
+      - reopened
+      - ready_for_review
 
 jobs:
   check-pro-label:
