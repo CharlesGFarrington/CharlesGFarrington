@@ -12,6 +12,8 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       pr_number: ${{ steps.extract_pr_number.outputs.pr_number }}
+    env:
+      GH_TOKEN: ${{ github.token }}
     steps:
       - name: Extract PR Number
         id: extract_pr_number
@@ -27,7 +29,7 @@ jobs:
       application: pro
       pr_number: ${{ needs.get-pr-number.outputs.pr_number }}
     secrets:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   calculate-pro-new-version:
     name: Calculate Pro New Version
