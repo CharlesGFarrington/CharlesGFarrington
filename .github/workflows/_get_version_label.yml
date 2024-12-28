@@ -51,10 +51,8 @@ jobs:
 
           VERSION_TYPE=""
 
-          # Split labels into an array
-          IFS=$'\n' read -r -d '' -a LABELS_ARRAY <<< "$LABELS"
-
-          for LABEL in "${LABELS_ARRAY[@]}"; do
+          # Loop over each label (split by spaces if multiple labels are present)
+          for LABEL in $LABELS; do
             if [[ " ${VALID_LABELS[@]} " =~ " $LABEL " ]]; then
               VERSION_TYPE=$(echo $LABEL | cut -d':' -f2)
               break
