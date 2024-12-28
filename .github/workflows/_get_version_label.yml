@@ -50,7 +50,11 @@ jobs:
           VALID_LABELS=("${APPLICATION}:patch" "${APPLICATION}:minor" "${APPLICATION}:major")
 
           VERSION_TYPE=""
-          for LABEL in $LABELS; do
+
+          # Split labels into an array
+          IFS=$'\n' read -r -d '' -a LABELS_ARRAY <<< "$LABELS"
+
+          for LABEL in "${LABELS_ARRAY[@]}"; do
             if [[ " ${VALID_LABELS[@]} " =~ " $LABEL " ]]; then
               VERSION_TYPE=$(echo $LABEL | cut -d':' -f2)
               break
@@ -58,3 +62,4 @@ jobs:
           done
 
           echo "version_type=${VERSION_TYPE}" >> $GITHUB_OUTPUT
+
