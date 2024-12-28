@@ -20,14 +20,16 @@ jobs:
 
   calculate-investor-new-version:
     name: Calculate Investor New Version
+    if: ${{ needs.get-investor-version-label.outputs.version_type }}
     needs: get-investor-version-label
-    uses: ./.github/workflows/_version_bump.yml
+    uses: ./.github/workflows/_determine_new_version.yml
     with:
       application: investor
       version_type: ${{ needs.get-investor-version-label.outputs.version_type }}
 
   spin-up-investor-environment:
     name: Spin Up Investor Ephemeral Environment
+    if: ${{ needs.get-investor-version-label.outputs.version_type }}
     needs: calculate-investor-new-version
     runs-on: ubuntu-latest
 

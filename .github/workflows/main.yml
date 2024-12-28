@@ -34,14 +34,14 @@ jobs:
 
       - name: Determine Pro Version
         id: determine_pro_version
-        uses: ./.github/workflows/_version_bump.yml
+        uses: ./.github/workflows/_determine_new_version.yml
         with:
           application: pro
           version_type: ${{ steps.get_pro_version_label.outputs.version_type }}
 
       - name: Determine Investor Version
         id: determine_investor_version
-        uses: ./.github/workflows/_version_bump.yml
+        uses: ./.github/workflows/_determine_new_version.yml
         with:
           application: investor
           version_type: ${{ steps.get_investor_version_label.outputs.version_type }}

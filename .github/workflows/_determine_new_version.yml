@@ -1,4 +1,4 @@
-name: Version Bump Sub-Workflow
+name: Determine New Version Sub-Workflow
 
 on:
   workflow_call:
