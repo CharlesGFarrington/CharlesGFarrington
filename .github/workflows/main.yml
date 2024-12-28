@@ -106,16 +106,16 @@ jobs:
       - name: Get PR Labels
         id: get_labels
         run: |
-          PR_NUMBER=${{ needs.get-pr-number.outputs.pr_number }}
+          PR_NUMBER=${{ inputs.pr_number }}
           LABELS=$(gh pr view $PR_NUMBER --json labels --jq '.labels[].name')
-          echo "labels=$LABELS" >> $GITHUB_ENV
+          echo "$LABELS" > labels.txt
+          echo "Labels:"
+          cat labels.txt
 
       - name: Extract Manual Deploy Label
         id: get_manual_deploy_label
-        env:
-          LABELS: ${{ env.labels }}
         run: |
-          if echo "$LABELS" | grep -q "manual deploy"; then
+          if grep -q "manual deploy" labels.txt; then
             echo "manual_deploy=true" >> $GITHUB_OUTPUT
           else
             echo "manual_deploy=false" >> $GITHUB_OUTPUT
