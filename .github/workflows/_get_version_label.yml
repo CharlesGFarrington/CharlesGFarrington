@@ -50,13 +50,13 @@ jobs:
 
           VERSION_TYPE=""
 
-          # Loop over each label (split by spaces if multiple labels are present)
-          for LABEL in $LABELS; do
+          # Split labels into lines and iterate over them
+          while IFS= read -r LABEL; do
             if [[ " ${VALID_LABELS[@]} " =~ " $LABEL " ]]; then
-              VERSION_TYPE=$(echo $LABEL | cut -d':' -f2)
+              VERSION_TYPE=$(echo "$LABEL" | cut -d':' -f2)
               break
             fi
-          done
+          done <<< "$LABELS"
 
           echo "version_type=${VERSION_TYPE}" >> $GITHUB_OUTPUT
 
