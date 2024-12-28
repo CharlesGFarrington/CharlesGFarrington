@@ -7,12 +7,25 @@ on:
 permissions: write-all
 
 jobs:
+  get-pr-number:
+    name: Get PR Number
+    runs-on: ubuntu-latest
+    outputs:
+      pr_number: ${{ steps.extract_pr_number.outputs.pr_number }}
+    steps:
+      - name: Extract PR Number
+        id: extract_pr_number
+        run: |
+          PR_NUMBER=$(gh pr list --state merged --head ${{ github.repository }}:${{ github.ref_name }} --json number --jq '.[0].number')
+          echo "pr_number=$PR_NUMBER" >> $GITHUB_OUTPUT
+
   get-pro-version-label:
     name: Get Pro Version Label
+    needs: get-pr-number
     uses: ./.github/workflows/_get_version_label.yml
     with:
       application: pro
-      pr_number: ${{ github.event.pull_request.number }}
+      pr_number: ${{ needs.get-pr-number.outputs.pr_number }}
     secrets:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -41,10 +54,11 @@ jobs:
 
   get-investor-version-label:
     name: Get Investor Version Label
+    needs: get-pr-number
     uses: ./.github/workflows/_get_version_label.yml
     with:
       application: investor
-      pr_number: ${{ github.event.pull_request.number }}
+      pr_number: ${{ needs.get-pr-number.outputs.pr_number }}
     secrets:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -76,6 +90,8 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       manual_deploy: ${{ steps.get_manual_deploy_label.outputs.manual_deploy }}
+    env:
+      GH_TOKEN: ${{ github.token }}
 
     steps:
       - name: Checkout repository
