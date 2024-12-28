@@ -20,7 +20,7 @@ jobs:
       - name: Extract PR Number
         id: extract_pr_number
         run: |
-          PR_NUMBER=$(gh pr list --state merged --base main sort:updated-desc --json number --jq '.[0].number')
+          PR_NUMBER=$(gh pr list --state merged --base main --json number,mergedAt --jq 'sort_by(.mergedAt) | reverse | .[0].number')
           echo "PR number: $PR_NUMBER"
           echo "pr_number=$PR_NUMBER" >> $GITHUB_OUTPUT
 
