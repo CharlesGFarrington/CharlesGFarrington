@@ -73,7 +73,6 @@ jobs:
 
   check-if-manual-deploy:
     name: Get Manual Deploy Label
-    needs: [calculate-and-tag-new-version]
     runs-on: ubuntu-latest
     outputs:
       manual_deploy: ${{ steps.get_manual_deploy_label.outputs.manual_deploy }}
