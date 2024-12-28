@@ -63,22 +63,47 @@ jobs:
           # Push tags back to the repository
           git push --tags
 
+  check-if-manual-deploy:
+    name: Get Manual Deploy Label
+    needs: [calculate-and-tag-new-version]
+    runs-on: ubuntu-latest
+    outputs:
+      manual_deploy: ${{ steps.get_manual_deploy_label.outputs.manual_deploy }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Get PR Labels
+        id: get_labels
+        run: |
+          PR_NUMBER=${{ github.event.pull_request.number }}
+          LABELS=$(gh pr view $PR_NUMBER --json labels --jq '.labels[].name')
+          echo "$LABELS" > labels.txt
+          echo "Labels:"
+          cat labels.txt
+
+      - name: Get Manual Deploy Label
+        id: get_manual_deploy_label
+        run: |
+          echo "manual_deploy=contains(env.labels, 'manual deploy')" >> $GITHUB_ENV
+
   deploy_pro:
     name: Deploy Pro Application
-    needs: [calculate-and-tag-new-version]
+    needs: [calculate-and-tag-new-version, check-if-manual-deploy]
     uses: ./.github/workflows/deploy.yml
-    if: ${{ needs.outputs.pro_new_version }}
+    if: ${{ needs.calculate-and-tag-new-version.outputs.pro_new_version }}
     with:
       application: pro
       version: ${{ needs.outputs.pro_new_version }}
-      manual_deploy: ${{ contains(env.labels, 'manual deploy') }}
+      manual_deploy: ${{ needs.check-if-manual-deploy.outputs.manual_deploy }}
 
   deploy_investor:
     name: Deploy Investor Application
-    needs: [calculate-and-tag-new-version]
+    needs: [calculate-and-tag-new-version, check-if-manual-deploy]
     uses: ./.github/workflows/deploy.yml
-    if: ${{ needs.outputs.investor_new_version }}
+    if: ${{ needs.calculate-and-tag-new-version.outputs.investor_new_version }}
     with:
       application: investor
       version: ${{ needs.outputs.investor_new_version }}
-      manual_deploy: ${{ contains(env.labels, 'manual deploy') }}
+      manual_deploy: ${{ needs.check-if-manual-deploy.outputs.manual_deploy }}
