@@ -128,7 +128,7 @@ jobs:
     with:
       application: pro
       version: ${{ needs.outputs.pro_new_version }}
-      manual_deploy: ${{ needs.check-if-manual-deploy.outputs.manual_deploy }}
+      manual_deploy: "${{ needs.check-if-manual-deploy.outputs.manual_deploy == 'true' }}"
 
   deploy_investor:
     name: Deploy Investor Application
@@ -137,4 +137,4 @@ jobs:
     with:
       application: investor
       version: ${{ needs.outputs.investor_new_version }}
-      manual_deploy: ${{ needs.check-if-manual-deploy.outputs.manual_deploy }}
+      manual_deploy: "${{ needs.check-if-manual-deploy.outputs.manual_deploy == 'true' }}"
