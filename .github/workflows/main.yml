@@ -49,11 +49,11 @@ jobs:
       - name: Apply new tags
         run: |
           if [[ -n "${{ steps.determine_pro_version.outputs.new_version }}" ]]; then
-            git tag "pro:${{ steps.determine_pro_version.outputs.new_version }}"
+            git tag "pro-${{ steps.determine_pro_version.outputs.new_version }}"
             echo "Tagged pro with version ${{ steps.determine_pro_version.outputs.new_version }}"
           fi
           if [[ -n "${{ steps.determine_investor_version.outputs.new_version }}" ]]; then
-            git tag "investor:${{ steps.determine_investor_version.outputs.new_version }}"
+            git tag "investor-${{ steps.determine_investor_version.outputs.new_version }}"
             echo "Tagged investor with version ${{ steps.determine_investor_version.outputs.new_version }}"
           fi
 
