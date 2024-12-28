@@ -16,11 +16,14 @@ on:
     outputs:
       version_type:
         description: The version type (patch, minor, or major) for the application
+        value: ${{ jobs.find-version-label.outputs.version_type }}
 
 jobs:
   find-version-label:
     name: Find Version Label
     runs-on: ubuntu-latest
+    outputs:
+      version_type: ${{ steps.determine_label.outputs.version_type }}
 
     steps:
       - name: Checkout repository
