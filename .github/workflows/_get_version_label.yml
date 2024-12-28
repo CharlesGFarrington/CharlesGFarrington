@@ -34,8 +34,9 @@ jobs:
         run: |
           PR_NUMBER=${{ inputs.pr_number }}
           LABELS=$(gh pr view $PR_NUMBER --json labels --jq '.labels[].name')
-          echo "Labels: $LABELS"
-          echo "labels=$LABELS" >> $GITHUB_ENV
+          echo "$LABELS" > labels.txt
+          echo "Labels:"
+          cat labels.txt
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
 
@@ -43,20 +44,16 @@ jobs:
         id: determine_label
         run: |
           APPLICATION="${{ inputs.application }}"
-          LABELS="${LABELS}"
-
-          # Define valid labels for the application
           VALID_LABELS=("${APPLICATION}:patch" "${APPLICATION}:minor" "${APPLICATION}:major")
 
           VERSION_TYPE=""
 
-          # Split labels into lines and iterate over them
+          # Iterate over each line in the labels file
           while IFS= read -r LABEL; do
             if [[ " ${VALID_LABELS[@]} " =~ " $LABEL " ]]; then
               VERSION_TYPE=$(echo "$LABEL" | cut -d':' -f2)
               break
             fi
-          done <<< "$LABELS"
+          done < labels.txt
 
           echo "version_type=${VERSION_TYPE}" >> $GITHUB_OUTPUT
-
