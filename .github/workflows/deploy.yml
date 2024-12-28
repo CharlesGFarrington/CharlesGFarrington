@@ -19,7 +19,7 @@ jobs:
   deploy-qa:
     runs-on: ubuntu-latest
     environment:
-      name: QA
+      name: ${{ inputs.application }}-QA
     steps:
       - name: deploy
         run: echo 'deploying "${{ inputs.application }}" version "${{ inputs.version }}" to QA'
@@ -28,7 +28,7 @@ jobs:
     needs: [deploy-qa]
     runs-on: ubuntu-latest
     environment:
-      name: gatekeep-staging
+      name: ${{ inputs.application }}-gatekeep-staging
     steps:
       - name: gatekeep
         run: echo "awaiting approval"
@@ -39,6 +39,8 @@ jobs:
       needs.deploy-qa.result == 'success' &&
       (needs.gatekeep-staging.result == 'success' || needs.gatekeep-staging.result == 'skipped')
     runs-on: ubuntu-latest
+    environment:
+      name: ${{ inputs.application }}-staging
     steps:
       - name: deploy
         run: echo 'deploying "${{ inputs.application }}" version "${{ inputs.version }}" to staging'
@@ -47,10 +49,10 @@ jobs:
     needs: [deploy-staging]
     runs-on: ubuntu-latest
     environment:
-      name: gatekeep-production
+      name: ${{ inputs.application }}-gatekeep-production
     steps:
       - name: gatekeep
-        run: echo "awaiting approval
+        run: echo "awaiting approval"
   deploy-production:
     runs-on: ubuntu-latest
     needs: [deploy-staging, gatekeep-production]
@@ -58,6 +60,8 @@ jobs:
       always() &&
       needs.deploy-staging.result == 'success' &&
       (needs.gatekeep-production.result == 'success' || needs.gatekeep-production.result == 'skipped')
+    environment:
+      name: ${{ inputs.application }}-production
     steps:
       - name: deploy
         run: echo 'deploying "${{ inputs.application }}" version "${{ inputs.version }}" to production'
