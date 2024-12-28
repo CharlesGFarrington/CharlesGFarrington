@@ -24,7 +24,7 @@ jobs:
       - name: deploy
         run: echo 'deploying "${{ inputs.application }}" version "${{ inputs.version }}" to QA'
   gatekeep-staging:
-    if: ${{ inputs.manual_deploy == 'true' }}
+    if: ${{ inputs.manual_deploy }}
     needs: [deploy-qa]
     runs-on: ubuntu-latest
     environment:
@@ -43,7 +43,7 @@ jobs:
       - name: deploy
         run: echo 'deploying "${{ inputs.application }}" version "${{ inputs.version }}" to staging'
   gatekeep-production:
-    if: ${{ inputs.manual_deploy == 'true' }}
+    if: ${{ inputs.manual_deploy }}
     needs: [deploy-staging]
     runs-on: ubuntu-latest
     environment:

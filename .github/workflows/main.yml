@@ -116,8 +116,10 @@ jobs:
         id: get_manual_deploy_label
         run: |
           if grep -q "manual deploy" labels.txt; then
+            echo "Manual deploy: true"
             echo "manual_deploy=true" >> $GITHUB_OUTPUT
           else
+            echo "Manual deploy: false"
             echo "manual_deploy=false" >> $GITHUB_OUTPUT
           fi
 
