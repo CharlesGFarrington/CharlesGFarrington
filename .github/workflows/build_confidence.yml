@@ -1,0 +1,28 @@
+name: build-confidence
+
+on:
+  pull_request:
+    types:
+      - opened
+      - unlocked
+      - synchronize
+      - reopened
+      - ready_for_review
+
+jobs:
+  lint-build-test:
+    name: Lint, Build, and Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run Lint
+        run: echo "Linting..."
+
+      - name: Run Build
+        run: echo "Building..."
+
+      - name: Run Tests
+        run: echo "Running tests..."

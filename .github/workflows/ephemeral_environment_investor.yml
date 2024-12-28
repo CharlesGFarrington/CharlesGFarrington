@@ -1,0 +1,42 @@
+name: ephemeral-build-investor
+
+on:
+  pull_request:
+    types:
+      - labeled
+      - unlabeled
+      - synchronize
+      - reopened
+      - ready_for_review
+
+jobs:
+  get-investor-version-label:
+    name: Get Investor Version Label
+    uses: ./.github/workflows/_get_version_label.yml
+    with:
+      application: investor
+      pr_number: ${{ github.event.pull_request.number }}
+    secrets:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  calculate-investor-new-version:
+    name: Calculate Investor New Version
+    if: ${{ needs.get-investor-version-label.outputs.version_type }}
+    needs: get-investor-version-label
+    uses: ./.github/workflows/_determine_new_version.yml
+    with:
+      application: investor
+      version_type: ${{ needs.get-investor-version-label.outputs.version_type }}
+
+  spin-up-investor-environment:
+    name: Spin Up Investor Ephemeral Environment
+    if: ${{ needs.get-investor-version-label.outputs.version_type }}
+    needs: calculate-investor-new-version
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Docker Build for Investor
+        run: |
+          echo "Building Docker image for Investor with version: ${{ needs.calculate-investor-new-version.outputs.new_version }}"
+          # Placeholder for Docker build command
+          echo "docker build -t investor-app:${{ needs.calculate-investor-new-version.outputs.new_version }} ."
