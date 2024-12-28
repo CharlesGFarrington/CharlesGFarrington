@@ -106,7 +106,7 @@ jobs:
       - name: Get PR Labels
         id: get_labels
         run: |
-          PR_NUMBER=${{ inputs.pr_number }}
+          PR_NUMBER=${{ needs.get-pr-number.outputs.pr_number }}
           LABELS=$(gh pr view $PR_NUMBER --json labels --jq '.labels[].name')
           echo "$LABELS" > labels.txt
           echo "Labels:"
