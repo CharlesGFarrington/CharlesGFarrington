@@ -10,6 +10,9 @@ jobs:
   calculate-and-tag-new-version:
     name: Calculate and Apply Tags
     runs-on: ubuntu-latest
+    outputs:
+      pro_new_version: ${{ steps.determine_pro_version.outputs.new_version }}
+      investor_new_version: ${{ steps.determine_investor_version.outputs.new_version }}
 
     steps:
       - name: Checkout repository
@@ -64,18 +67,18 @@ jobs:
     name: Deploy Pro Application
     needs: [calculate-and-tag-new-version]
     uses: ./.github/workflows/deploy.yml
-    if: ${{ steps.determine_pro_version.outputs.new_version }}
+    if: ${{ needs.outputs.pro_new_version }}
     with:
       application: pro
-      version: ${{ steps.determine_pro_version.outputs.new_version }}
+      version: ${{ needs.outputs.pro_new_version }}
       manual_deploy: ${{ contains(env.labels, 'manual deploy') }}
 
   deploy_investor:
     name: Deploy Investor Application
     needs: [calculate-and-tag-new-version]
     uses: ./.github/workflows/deploy.yml
-    if: ${{ steps.determine_investor_version.outputs.new_version }}
+    if: ${{ needs.outputs.investor_new_version }}
     with:
       application: investor
-      version: ${{ steps.determine_investor_version.outputs.new_version }}
+      version: ${{ needs.outputs.investor_new_version }}
       manual_deploy: ${{ contains(env.labels, 'manual deploy') }}
