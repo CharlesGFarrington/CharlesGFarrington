@@ -18,13 +18,16 @@ on:
   workflow_dispatch:
     inputs:
       application:
-        description: The application to deploy to
+        description: Application
         required: true
-        type: string
+        type: choice
+        options:
+          - pro
+          - investor
       version:
         required: true
         type: string
-        description: format MAJOR.MINOR.PATCH
+        description: Version to deploy. Format MAJOR.MINOR.PATCH
       manual_deploy:
         description: True if there should be gatekeep steps to deploy to staging and production
         required: false
