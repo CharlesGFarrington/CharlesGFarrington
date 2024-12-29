@@ -21,18 +21,18 @@ jobs:
 
   calculate-pro-new-version:
     name: Calculate Pro New Version
-    if: ${{ needs.get-pro-version-label.outputs.version_type }}
     needs: get-pro-version-label
+    if: ${{ needs.get-pro-version-label.outputs.version_type }}
     uses: ./.github/workflows/_determine_new_version.yml
     with:
       application: pro
       version_type: ${{ needs.get-pro-version-label.outputs.version_type }}
 
   spin-up-pro-environment:
-    name: Spin Up Pro Ephemeral Environment
-    if: ${{ needs.get-pro-version-label.outputs.version_type }}
-    needs: calculate-pro-new-version
     runs-on: ubuntu-latest
+    name: Spin Up Pro Ephemeral Environment
+    needs: calculate-pro-new-version
+    if: ${{ needs.get-pro-version-label.outputs.version_type }}
 
     steps:
       - name: Docker Build for Pro
