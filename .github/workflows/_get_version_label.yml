@@ -44,17 +44,18 @@ jobs:
         id: determine_label
         run: |
           APPLICATION="${{ inputs.application }}"
-          VALID_LABELS=("${APPLICATION}:patch" "${APPLICATION}:minor" "${APPLICATION}:major")
+          VALID_SUFFIXES=("patch" "minor" "major")
 
           VERSION_TYPE=""
           VALID_COUNT=0
 
-          # Filter labels only for the current application
+          # Process labels specific to the current application
           while IFS= read -r LABEL; do
             if [[ "$LABEL" == "${APPLICATION}:"* ]]; then
-              if [[ " ${VALID_LABELS[@]} " =~ " $LABEL " ]]; then
+              LABEL_TYPE="${LABEL#*:}"
+              if [[ " ${VALID_SUFFIXES[*]} " =~ " ${LABEL_TYPE} " ]]; then
                 ((VALID_COUNT++))
-                VERSION_TYPE=$(echo "$LABEL" | cut -d':' -f2)
+                VERSION_TYPE="$LABEL_TYPE"
               fi
             fi
           done < labels.txt
