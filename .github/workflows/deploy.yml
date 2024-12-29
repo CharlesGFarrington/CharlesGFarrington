@@ -1,8 +1,9 @@
 name: "deploy"
 on:
-  workflow_call:
+  workflow_dispatch:
     inputs:
       application:
+        description: The application to deploy to
         required: true
         type: string
       version:
@@ -10,6 +11,7 @@ on:
         type: string
         description: format MAJOR.MINOR.PATCH
       manual_deploy:
+        description: True if there should be gatekeep steps to deploy to staging and production
         required: false
         type: boolean
         default: false
