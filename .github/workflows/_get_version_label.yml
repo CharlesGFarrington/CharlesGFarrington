@@ -49,11 +49,13 @@ jobs:
           VERSION_TYPE=""
           VALID_COUNT=0
 
-          # Iterate over each line in the labels file
+          # Filter labels only for the current application
           while IFS= read -r LABEL; do
-            if [[ " ${VALID_LABELS[@]} " =~ " $LABEL " ]]; then
-              ((VALID_COUNT++))
-              VERSION_TYPE=$(echo "$LABEL" | cut -d':' -f2)
+            if [[ "$LABEL" == "${APPLICATION}:"* ]]; then
+              if [[ " ${VALID_LABELS[@]} " =~ " $LABEL " ]]; then
+                ((VALID_COUNT++))
+                VERSION_TYPE=$(echo "$LABEL" | cut -d':' -f2)
+              fi
             fi
           done < labels.txt
 
@@ -63,3 +65,4 @@ jobs:
           fi
 
           echo "version_type=${VERSION_TYPE}" >> $GITHUB_OUTPUT
+
