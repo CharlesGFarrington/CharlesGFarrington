@@ -53,7 +53,7 @@ jobs:
           while IFS= read -r LABEL; do
             if [[ " ${VALID_LABELS[@]} " =~ " $LABEL " ]]; then
               VERSION_TYPE=$(echo "$LABEL" | cut -d':' -f2)
-              break
+              ((VALID_COUNT++))
             fi
           done < labels.txt
 
