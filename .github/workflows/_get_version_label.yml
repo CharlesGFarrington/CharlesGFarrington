@@ -49,13 +49,13 @@ jobs:
           VERSION_TYPE=""
           VALID_COUNT=0
 
-          # Read and process labels
+          # Read and process labels using a while loop without a subshell
           while IFS= read -r LABEL; do
             if [[ " ${VALID_LABELS[@]} " =~ " $LABEL " ]]; then
               VERSION_TYPE=$(echo "$LABEL" | cut -d':' -f2)
-              ((VALID_COUNT++))
+              VALID_COUNT=$((VALID_COUNT + 1))
             fi
-          done < labels.txt
+          done <<< "$(cat labels.txt)"
 
           # Fail if more than one valid label is found
           if [[ $VALID_COUNT -gt 1 ]]; then
@@ -65,5 +65,6 @@ jobs:
 
           # Output the version type
           echo "version_type=${VERSION_TYPE}" >> $GITHUB_OUTPUT
+
 
 
