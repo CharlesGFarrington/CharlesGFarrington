@@ -44,26 +44,30 @@ jobs:
         id: determine_label
         run: |
           APPLICATION="${{ inputs.application }}"
-          VALID_SUFFIXES=("patch" "minor" "major")
+          VALID_LABELS=("patch" "minor" "major")
 
           VERSION_TYPE=""
           VALID_COUNT=0
 
-          # Process labels specific to the current application
+          # Read and process labels
           while IFS= read -r LABEL; do
+            # Check if the label matches the current application
             if [[ "$LABEL" == "${APPLICATION}:"* ]]; then
-              LABEL_TYPE="${LABEL#*:}"
-              if [[ " ${VALID_SUFFIXES[*]} " =~ " ${LABEL_TYPE} " ]]; then
+              LABEL_SUFFIX="${LABEL#*:}"  # Extract the suffix after ':'
+              if [[ " ${VALID_LABELS[*]} " =~ " ${LABEL_SUFFIX} " ]]; then
                 ((VALID_COUNT++))
-                VERSION_TYPE="$LABEL_TYPE"
+                VERSION_TYPE="$LABEL_SUFFIX"
               fi
             fi
           done < labels.txt
 
+          # Fail if more than one valid label is found
           if [[ $VALID_COUNT -gt 1 ]]; then
             echo "::error::More than one valid label found for application '${APPLICATION}'."
             exit 1
           fi
 
+          # Output the version type
           echo "version_type=${VERSION_TYPE}" >> $GITHUB_OUTPUT
+
 
