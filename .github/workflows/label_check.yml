@@ -30,9 +30,9 @@ jobs:
     secrets:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  validate-labels:
+  validate-at-least-one-label:
     runs-on: ubuntu-latest
-    name: Validate All Labels
+    name: Validate At Least One Label
     needs: [check-pro-label, check-investor-label]
 
     steps:

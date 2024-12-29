@@ -47,13 +47,19 @@ jobs:
           VALID_LABELS=("${APPLICATION}:patch" "${APPLICATION}:minor" "${APPLICATION}:major")
 
           VERSION_TYPE=""
+          VALID_COUNT=0
 
           # Iterate over each line in the labels file
           while IFS= read -r LABEL; do
             if [[ " ${VALID_LABELS[@]} " =~ " $LABEL " ]]; then
+              ((VALID_COUNT++))
               VERSION_TYPE=$(echo "$LABEL" | cut -d':' -f2)
-              break
             fi
           done < labels.txt
+
+          if [[ $VALID_COUNT -gt 1 ]]; then
+            echo "Error: More than one valid label found for application '${APPLICATION}'."
+            exit 1
+          fi
 
           echo "version_type=${VERSION_TYPE}" >> $GITHUB_OUTPUT
