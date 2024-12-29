@@ -30,12 +30,10 @@ jobs:
     secrets:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  validate-labels:
-    name: Validate All Labels
-    needs:
-      - check-pro-label
-      - check-investor-label
+  validate-at-least-one-label:
     runs-on: ubuntu-latest
+    name: Validate At Least One Label
+    needs: [check-pro-label, check-investor-label]
 
     steps:
       - name: Validate Labels
@@ -45,7 +43,7 @@ jobs:
 
           # Ensure at least one versioning label exists
           if [[ -z "${{ needs.check-pro-label.outputs.version_type }}" && -z "${{ needs.check-investor-label.outputs.version_type }}" ]]; then
-            echo "Error: No versioning labels found for Pro or Investor."
+            echo "::error::No versioning labels found for Pro or Investor."
             exit 1
           fi
 
