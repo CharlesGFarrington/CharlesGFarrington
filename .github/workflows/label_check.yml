@@ -43,7 +43,7 @@ jobs:
 
           # Ensure at least one versioning label exists
           if [[ -z "${{ needs.check-pro-label.outputs.version_type }}" && -z "${{ needs.check-investor-label.outputs.version_type }}" ]]; then
-            echo "Error: No versioning labels found for Pro or Investor."
+            echo "::error::More than one valid label found for application '${APPLICATION}'."
             exit 1
           fi
 
