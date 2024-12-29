@@ -58,7 +58,7 @@ jobs:
           done < labels.txt
 
           if [[ $VALID_COUNT -gt 1 ]]; then
-            echo "Error: More than one valid label found for application '${APPLICATION}'."
+            echo "::error::More than one valid label found for application '${APPLICATION}'."
             exit 1
           fi
 
